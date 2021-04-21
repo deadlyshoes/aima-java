@@ -16,6 +16,8 @@ import aima.core.search.uninformed.BreadthFirstSearch;
 import aima.core.search.uninformed.DepthFirstSearch;
 import aima.core.search.uninformed.DepthLimitedSearch;
 import aima.core.search.uninformed.IterativeDeepeningSearch;
+import aima.core.search.uninformed.UniformCostSearch;
+import aima.core.util.datastructure.XYLocation;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -30,35 +32,55 @@ import java.util.function.Predicate;
 public class NQueensDemo {
 
 	private static final int boardSize = 8;
+	private static NQueensBoard board = null;
 
 	public static void main(String[] args) {
 		startNQueensDemo();
 	}
 
 	private static void startNQueensDemo() {
+		List<XYLocation> locations = new ArrayList<XYLocation>();
+		for (int i = 0; i < boardSize; i++)
+			locations.add(new XYLocation(i, i));
+		
+		board = new NQueensBoard(boardSize);
+		board.setQueensAt(locations);
+		
 		solveNQueensWithDepthFirstSearch();
+		solveNQueensWithUniformCostSearch();
 		solveNQueensWithBreadthFirstSearch();
-		solveNQueensWithAStarSearch();
-		solveNQueensWithAStarSearch4e();
+//		solveNQueensWithAStarSearch();
+//		solveNQueensWithAStarSearch4e();
 		solveNQueensWithRecursiveDLS();
 		solveNQueensWithIterativeDeepeningSearch();
-		solveNQueensWithSimulatedAnnealingSearch();
-		solveNQueensWithHillClimbingSearch();
-		solveNQueensWithGeneticAlgorithmSearch();
-		solveNQueensWithRandomWalk();
+//		solveNQueensWithSimulatedAnnealingSearch();
+//		solveNQueensWithHillClimbingSearch();
+//		solveNQueensWithGeneticAlgorithmSearch();
+//		solveNQueensWithRandomWalk();
 	}
 
 	private static void solveNQueensWithDepthFirstSearch() {
 		System.out.println("\n--- NQueensDemo DFS ---");
 
 		Problem<NQueensBoard, QueenAction> problem = NQueensFunctions.createIncrementalFormulationProblem(boardSize);
-		SearchForActions<NQueensBoard, QueenAction> search = new DepthFirstSearch<>(new TreeSearch<>());
+		SearchForActions<NQueensBoard, QueenAction> search = new DepthFirstSearch<>(new GraphSearch<>());
 		Optional<List<QueenAction>> actions = search.findActions(problem);
 
 		actions.ifPresent(qActions -> qActions.forEach(System.out::println));
 		System.out.println(search.getMetrics());
 	}
 
+	private static void solveNQueensWithUniformCostSearch() {
+		System.out.println("\n--- NQueensDemo UCS ---");
+
+		Problem<NQueensBoard, QueenAction> problem = NQueensFunctions.createIncrementalFormulationProblem(boardSize);
+		SearchForActions<NQueensBoard, QueenAction> search = new UniformCostSearch<>(new GraphSearch<>());
+		Optional<List<QueenAction>> actions = search.findActions(problem);
+
+		actions.ifPresent(qActions -> qActions.forEach(System.out::println));
+		System.out.println(search.getMetrics());
+	}
+	
 	private static void solveNQueensWithBreadthFirstSearch() {
 		System.out.println("\n--- NQueensDemo BFS ---");
 
